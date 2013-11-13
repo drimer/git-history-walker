@@ -25,7 +25,7 @@ def cwd(path):
     previous_pwd = pwd().rstrip()
     try:
         cd(path)
-    except OSError, exc:
+    except OSError:
         raise InvalidDirectoryPath(
             'WARNING: did not change working directory to %s' % str(path))
     yield
@@ -38,6 +38,7 @@ def list_all_branch_commits(branch_name):
 
 
 def commit_is_in_master(commit_sha):
+    # pylint: disable=W0603
     global _commits_in_master
     if not _commits_in_master:
         _commits_in_master = list_all_branch_commits('master')
@@ -71,11 +72,13 @@ def main(options):
                 try:
                     return_code = subprocess.call(options.command)
                 except (OSError, subprocess.CalledProcessError):
-                    print 'Command %s failed on commit %s' % (options.command, commit)
+                    print 'Command %s failed on commit %s' % (
+                        options.command, commit)
                     sys.exit(return_code)
                 else:
                     if return_code != 0:
-                        print 'Command %s failed on commit %s' % (options.command, commit)
+                        print 'Command %s failed on commit %s' % (
+                            options.command, commit)
                         sys.exit(return_code)
                     
 
