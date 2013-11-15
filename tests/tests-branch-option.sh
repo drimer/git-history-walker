@@ -11,6 +11,5 @@ EOF
     diff -u \
 	expected-output \
 	<(./git_history_walker.py --repo test-repo --branch devel \
-	-- git rev-parse --revs-only HEAD) \
-	>/dev/null 2>&1
+	-- git rev-parse --revs-only HEAD)
 }
