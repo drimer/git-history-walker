@@ -45,9 +45,8 @@ def commit_is_in_master(commit_sha):
     return commit_sha in _commits_in_master
 
 
-def get_new_commits_in_branch(branch_name):
-    all_commits = list_all_branch_commits(branch_name)
-    return [commit for commit in all_commits if not commit_is_in_master(commit)]
+def get_all_commits_in_branch(branch_name):
+    return list_all_branch_commits(branch_name)
 
 
 @contextlib.contextmanager
@@ -66,9 +65,8 @@ def parse_arguments(arguments):
 
 def main(options):
     with cwd(options.git_repository):
-        for commit in get_new_commits_in_branch(options.branch_name):
+        for commit in get_all_commits_in_branch(options.branch_name):
             with git_checkout(commit):
-                print 'Running: %s on %s' % (options.command, commit)
                 try:
                     return_code = subprocess.call(options.command)
                 except (OSError, subprocess.CalledProcessError):
