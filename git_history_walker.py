@@ -5,7 +5,7 @@ import contextlib
 import subprocess
 import sys
 
-from sh import git, pwd, cd
+from sh import git, pwd, cd, ErrorReturnCode
 
 
 branch_name = 'multiple-state-machines'
@@ -65,7 +65,20 @@ def parse_arguments(arguments):
     return parser.parse_args(arguments)
 
 
+def verify_options(options):
+    if not options.from_branch:
+        return
+
+    try:
+        git('show-branch', options.from_branch)
+    except ErrorReturnCode as e:
+        if e.exit_code == 128:
+            print 'ERROR: --from-branch contains an invalid branch name'
+            sys.exit(3)
+
 def main(options):
+    verify_options(options)
+
     with cwd(options.git_repository):
         for commit in get_all_commits_in_branch(
                 options.branch_name, from_branch=options.from_branch):
