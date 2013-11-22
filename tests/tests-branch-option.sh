@@ -13,3 +13,25 @@ EOF
 	<(./git_history_walker.py --repo test-repo --branch devel \
 	-- git rev-parse --revs-only HEAD)
 }
+
+test_branch_with_valid_base_branch() {
+    cat >expected-output <<EOF
+ca9b647c34951727987c47adf13cf673aa2907fa
+ec29da1c16d035054c625b9b49f916b2f498b264
+94cce1dae5b4fd38ad2a85820973282a378a755c
+EOF
+
+    diff -u \
+	expected-output \
+	<(./git_history_walker.py --repo test-repo --branch devel \
+	--from-branch master -- git rev-parse --revs-only HEAD)
+}
+
+test_nonexistent_base_branch() {
+    ./git_history_walker.py --repo test-repo --from-branch nonexistent \
+	-- echo Iteration
+    [[ $? == 3 ]] || {
+	echo "Expected to fail with return code 1 when --from-branch does not exist";
+	return 1;
+    }
+}
